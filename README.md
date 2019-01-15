@@ -49,6 +49,8 @@ If you want to subscribe AWS Lambda Function created by this module to an existi
 | create_with_kms_key | Whether to create resources with KMS encryption | string | `false` | no |
 | kms_key_arn | ARN of the KMS key used for decrypting slack webhook url | string | `` | no |
 | lambda_function_name | The name of the Lambda function to create | string | `notify_slack` | no |
+| s3_bucket | The S3 bucket location containing the function's deployment package. This bucket must reside in the same AWS region where you are creating the Lambda function | string |`` | yes |
+| s3_prefix | The S3 prefix of an object containing the function's deployment package | string | `` | no |
 | slack_channel | The name of the channel in Slack for notifications | string | - | yes |
 | slack_emoji | A custom emoji that will appear on Slack messages | string | `:aws:` | no |
 | slack_username | The username that will appear on Slack messages | string | - | yes |

@@ -52,12 +52,22 @@ data "archive_file" "notify_slack" {
   output_path = "${data.null_data_source.lambda_archive.outputs.filename}"
 }
 
+resource "aws_s3_bucket_object" "notify_slack" {
+  count = "${var.create}"
+
+  bucket = "${var.s3_bucket}"
+  key    = "${var.s3_prefix}notify_slack.zip"
+  source = "${data.null_data_source.lambda_archive.outputs.filename}"
+  etag   = "${md5(file("${data.null_data_source.lambda_archive.outputs.filename}"))}"
+}
+
 resource "aws_lambda_function" "notify_slack" {
   count = "${var.create}"
 
-  filename = "${data.archive_file.notify_slack.0.output_path}"
-
   function_name = "${var.lambda_function_name}"
+
+  s3_bucket = "${var.s3_bucket}"
+  s3_key    = "${aws_s3_bucket_object.notify_slack.id}"
 
   role             = "${aws_iam_role.lambda.arn}"
   handler          = "notify_slack.lambda_handler"
