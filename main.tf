@@ -44,14 +44,6 @@ data "null_data_source" "lambda_archive" {
   }
 }
 
-data "archive_file" "notify_slack" {
-  count = "${var.create}"
-
-  type        = "zip"
-  source_file = "${data.null_data_source.lambda_file.outputs.filename}"
-  output_path = "${data.null_data_source.lambda_archive.outputs.filename}"
-}
-
 resource "aws_s3_bucket_object" "notify_slack" {
   count = "${var.create}"
 
@@ -71,7 +63,7 @@ resource "aws_lambda_function" "notify_slack" {
 
   role             = "${aws_iam_role.lambda.arn}"
   handler          = "notify_slack.lambda_handler"
-  source_code_hash = "${data.archive_file.notify_slack.0.output_base64sha256}"
+  source_code_hash = "${base64sha256(file("${data.null_data_source.lambda_archive.outputs.filename}"))}"
   runtime          = "python3.6"
   timeout          = 30
   kms_key_arn      = "${var.kms_key_arn}"
